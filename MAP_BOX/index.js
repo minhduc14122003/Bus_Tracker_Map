@@ -27,7 +27,6 @@ let geolocate;
 let busCoordsGlobal = null;
 let speedGlobal = null;
 let userLocation = null;
-let isStyleMacDinh = true;
 let isDisplayingRouteDetails = false;
 let isRouteDisplayed = false; 
 let startPoint = null;
@@ -36,221 +35,44 @@ let startMarker = null;
 let endMarker = null;
 let routeStationMarkers = [];
 
+// Danh sách trạm 
+const stationList = [
+  { coords: [106.86876063544871, 10.984409526801667], name: "Trạm xe 01: Trường Đại Học Công Nghệ Đồng Nai - Bến xe ngã tư Vũng Tàu" },
+  { coords: [106.80924766065695, 10.954310872231334], name: "Trạm xe 02: Bến Xe Biên Hoà - Trạm xe Nhơn Trạch" },
+  { coords: [106.8868960139604, 10.967065122295407], name: "Trạm xe 03: Bến xe Hố Nai - Trạm xe Hoá An" },
+  { coords: [106.65133430057564, 10.751169331175838], name: "Trạm xe 05 (Lượt đi): Bến xe Buýt Chợ Lớn - Bến xe Biên Hoà" },
+  { coords: [106.8092259974398, 10.95428062020573], name: "Trạm xe 05 (Lượt về): Bến xe Biên Hoà - Bến xe Buýt Chợ Lớn" },
+  { coords: [106.65133430057564, 10.751169331175838], name: "Trạm xe 06 (Lượt đi): Bến xe Buýt Chợ Lớn - Đại học Nông Lâm" },
+  { coords: [106.78772514129247, 10.868257382093063], name: "Trạm xe 06 (Lượt về): Đại học Nông Lâm - Bến xe Buýt Chợ Lớn" },
+  { coords: [106.65133430057564, 10.751169331175838], name: "Trạm xe 07 (Lượt đi): Bến xe Buýt Chợ Lớn - Gò Vấp" },
+  { coords: [106.69212073037636, 10.823589026984596], name: "Trạm xe 07 (Lượt về): Gò Vấp - Bến xe Buýt Chợ Lớn" },
+  { coords: [106.65655798940553, 10.733745258068025], name: "Trạm xe 08 (Lượt đi): Bến xe Buýt Quận 8 - Đại học Quốc gia" },
+  { coords: [106.80769278782195, 10.874491853155533], name: "Trạm xe 08 (Lượt về): Đại học Quốc gia - Bến xe Buýt Quận 8" },
+  { coords: [106.69936594057046, 10.73318582685308], name: "Trạm xe 31 (Lượt đi): Đại học Tôn Đức Thắng - Bến Thành - Đại học Văn Lang" },
+  { coords: [106.69970585297881, 10.833228284059642], name: "Trạm xe 31 (Lượt về): Đại học Văn Lang - Bến Thành - Đại học Tôn Đức Thắng" },
+  { coords: [106.65133430057564, 10.751169331175838], name: "Trạm xe 56 (Lượt đi): Bến xe Buýt Chợ Lớn - Bến xe Miền Đông mới" },
+  { coords: [106.81573752613731, 10.88042134672586], name: "Trạm xe 56 (Lượt về): Bến xe Miền Đông mới - Bến xe Buýt Chợ Lớn" },
+  { coords: [106.86012453956704, 10.789006629197738], name: "Trạm xe 76 (Lượt đi): Long Phước - Suối Tiên - Bến xe Miền Đông mới" },
+  { coords: [106.81573973002193, 10.880421255222206], name: "Trạm xe 76 (Lượt về): Bến xe Miền Đông mới - Suối Tiên - Long Phước" },
+  { coords: [106.77065836109871, 10.770613955193785], name: "Trạm xe 99 (Lượt đi): Chợ Thạnh Mỹ Lợi - Đại học Quốc gia" },
+  { coords: [106.77768641341427, 10.885121516547821], name: "Trạm xe 99 (Lượt về): Đại học Quốc gia - Chợ Thạnh Mỹ Lợi" },
+  { coords: [106.84127241157466, 10.805222103980833], name: "Trạm xe 141 (Lượt đi): Khu du lịch BCR - Long Trường - Khu chế xuất Linh Trung II" },
+  { coords: [106.71767686447654, 10.891244785231718], name: "Trạm xe 141 (Lượt về): Khu chế xuất Linh Trung II - Long Trường - Khu du lịch BCR" },
+];
+
 // Dữ liệu trạm
 const StationData = {
-    "type": "FeatureCollection",
-    "features": [
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": 'Point',
-                "coordinates": [106.86876063544871, 10.984409526801667]
-            },
-            "properties": {
-                "name": "Trạm xe 01: Trường Đại Học Công Nghệ Đồng Nai - Bến xe ngã tư Vũng Tàu"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.80924766065695, 10.954310872231334]
-            },
-            "properties": {
-                "name": "Trạm xe 02: Bến Xe Biên Hoà - Trạm xe Nhơn Trạch"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.8868960139604, 10.967065122295407]
-            },
-            "properties": {
-                "name": "Trạm xe 03: Bến xe Hố Nai - Trạm xe Hoá An"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.65133430057564, 10.751169331175838]
-            },
-            "properties": {
-                "name": "Trạm xe 05 (Lượt đi): Bến xe Buýt Chợ Lớn - Bến xe Biên Hoà"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.8092259974398, 10.95428062020573]
-            },
-            "properties": {
-                "name": "Trạm xe 05 (Lượt về): Bến xe Biên Hoà - Bến xe Buýt Chợ Lớn"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.65133430057564, 10.751169331175838]
-            },
-            "properties": {
-                "name": "Trạm xe 06 (Lượt đi): Bến xe Buýt Chợ Lớn - Đại học Nông Lâm"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.78772514129247, 10.868257382093063]
-            },
-            "properties": {
-                "name": "Trạm xe 06 (Lượt về): Đại học Nông Lâm - Bến xe Buýt Chợ Lớn"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.65133430057564, 10.751169331175838]
-            },
-            "properties": {
-                "name": "Trạm xe 07 (Lượt đi): Bến xe Buýt Chợ Lớn - Gò Vấp"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.69212073037636, 10.823589026984596]
-            },
-            "properties": {
-                "name": "Trạm xe 07 (Lượt về): Gò Vấp - Bến xe Buýt Chợ Lớn"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.65655798940553, 10.733745258068025]
-            },
-            "properties": {
-                "name": "Trạm xe 08 (Lượt đi): Bến xe Buýt Quận 8 - Đại học Quốc gia"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.80769278782195, 10.874491853155533]
-            },
-            "properties": {
-                "name": "Trạm xe 08 (Lượt về): Đại học Quốc gia - Bến xe Buýt Quận 8"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.69936594057046, 10.73318582685308]
-            },
-            "properties": {
-                "name": "Trạm xe 31 (Lượt đi): Đại học Tôn Đức Thắng - Bến Thành - Đại học Văn Lang"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.69970585297881, 10.833228284059642]
-            },
-            "properties": {
-                "name": "Trạm xe 31 (Lượt về): Đại học Văn Lang - Bến Thành - Đại học Tôn Đức Thắng"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.65133430057564, 10.751169331175838]
-            },
-            "properties": {
-                "name": "Trạm xe 56 (Lượt đi): Bến xe Buýt Chợ Lớn - Bến xe Miền Đông mới"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.81573752613731, 10.88042134672586]
-            },
-            "properties": {
-                "name": "Trạm xe 56 (Lượt về): Bến xe Miền Đông mới - Bến xe Buýt Chợ Lớn"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.86012453956704, 10.789006629197738]
-            },
-            "properties": {
-                "name": "Trạm xe 76 (Lượt đi): Long Phước - Suối Tiên - Bến xe Miền Đông mới"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.81573973002193, 10.880421255222206,]
-            },
-            "properties": {
-                "name": "Trạm xe 76 (Lượt về): Bến xe Miền Đông mới - Suối Tiên - Long Phước"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.77065836109871, 10.770613955193785]
-            },
-            "properties": {
-                "name": "Trạm xe 99 (Lượt đi): Chợ Thạnh Mỹ Lợi - Đại học Quốc gia"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.77768641341427, 10.885121516547821]
-            },
-            "properties": {
-                "name": "Trạm xe 99 (Lượt về): Đại học Quốc gia - Chợ Thạnh Mỹ Lợi"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.84127241157466, 10.805222103980833]
-            },
-            "properties": {
-                "name": "Trạm xe 141 (Lượt đi): Khu du lịch BCR - Long Trường - Khu chế xuất Linh Trung II"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [106.71767686447654, 10.891244785231718]
-            },
-            "properties": {
-                "name": "Trạm xe 141 (Lượt về): Khu chế xuất Linh Trung II - Long Trường - Khu du lịch BCR"
-            }
-        }
-    ]
+  type: "FeatureCollection",
+  features: stationList.map(station => ({
+    type: "Feature",
+    geometry: {
+      type: "Point",
+      coordinates: station.coords
+    },
+    properties: {
+      name: station.name
+    }
+  }))
 };
 
 // Hàm tính khoảng cách bus đến người dùng
@@ -296,7 +118,6 @@ function initControls() {
         userLocation = [evt.coords.longitude, evt.coords.latitude];
         console.log('User location:', userLocation);
     });
-
 }
 
 function initSearchBoxes() {
@@ -585,18 +406,21 @@ function busTracker() {
         client.subscribe('esp32/gps');
     });
 
-    client.on('message', async(topic, msg) => {
+    client.on('message', async (topic, msg) => {
         try {
             const { lat, lon, speed, time } = JSON.parse(msg.toString());
             busCoordsGlobal = [lon, lat];
             speedGlobal = speed;
             busMarker.setLngLat(busCoordsGlobal);
-            
-            // Zoom vị trí xe bus ngay khi có dữ liệu 
+
+            // Zoom vào vị trí bus ngay khi có vị trí
             if (ZoomtoBus) {
                 map.flyTo({ center: busCoordsGlobal, zoom: 14, speed: 0.6 });
                 ZoomtoBus = false;
             }
+            
+            let distanceText = 'Vui lòng bật định vị';
+            let etaText = 'Không xác định';
 
             if (userLocation) {
                 const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${busCoordsGlobal[0]},${busCoordsGlobal[1]};${userLocation[0]},${userLocation[1]}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
@@ -604,33 +428,22 @@ function busTracker() {
                 const data = await res.json();
 
                 if (data.routes && data.routes.length > 0) {
-                    const route = {
-                        type: 'Feature',
-                        geometry: data.routes[0].geometry
-                    };
+                    const route = data.routes[0];
+                    distanceText = `${(route.distance / 1000).toFixed(2)} km`;
+                    etaText = `${Math.round(route.duration / 60)} phút`;
 
                     if (map.getSource('bus-route')) {
-                        map.getSource('bus-route').setData(route);
+                        map.getSource('bus-route').setData({ type: 'Feature', geometry: route.geometry });
                     } else {
-                        map.addSource('bus-route', { type: 'geojson', data: route });
+                        map.addSource('bus-route', { type: 'geojson', data: { type: 'Feature', geometry: route.geometry } });
                         map.addLayer({
                             id: 'bus-route-layer',
                             type: 'line',
                             source: 'bus-route',
+                            layout: { 'line-join': 'round', 'line-cap': 'round' },
                             paint: { 'line-color': '#ff5733', 'line-width': 7, 'line-opacity': 0.85 }
                         });
                     }
-                }
-            }
-
-            // Cập nhật thông tin xe buýt
-            let distanceText = '(Vui lòng bật định vị)';
-            if (userLocation) {
-                const distance = await getDrivingDistance(userLocation, busCoordsGlobal);
-                if (distance !== null) {
-                    distanceText = `${distance} km`;
-                } else {
-                    distanceText = 'Không thể tính toán khoảng cách';
                 }
             }
 
@@ -653,6 +466,7 @@ function busTracker() {
                     <p>Tốc độ: <strong>${speed} km/h</strong></p>
                     <p>Thời gian: <strong>${formattedTime}</strong></p>
                     <p>Khoảng cách đến bạn: <strong>${distanceText}</strong></p>
+                    <p>Thời gian dự kiến đến bạn: <strong>${etaText}</strong></p>
                 `;
             }
         } catch (e) {
